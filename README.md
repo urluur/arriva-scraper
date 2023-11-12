@@ -6,6 +6,7 @@ This is a JavaScript scraper that retrieves information on upcoming bus departur
 
 - Clone the repository: ```git clone https://github.com/urluur/arriva-scraper.git```
 - Install dependancies: ```npm install```
+- Move to the directory: ```cd arriva-scraper/``` 
 - Run `index.js` with stations for arguments. Example: ```node index.js Koper Izola```
 
 If the station has multiple words, wrap it in double quotes.
