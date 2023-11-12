@@ -1,17 +1,5 @@
 import puppeteer from "puppeteer";
 
-let stations = {
-    "Izola": {
-        "name": "Izola",
-        "id": 138335
-    },
-    
-    "Koper": {
-        "name": "Koper",
-        "id": 135768
-    }
-}
-
 const travelTo = async (departure, destination, time) => {
     const browser = await puppeteer.launch({
         headless: true,
@@ -19,11 +7,29 @@ const travelTo = async (departure, destination, time) => {
     });
 
     const page = await browser.newPage();
-    let link = "https://arriva.si/vozni-redi/?departure-0000=" + departure.name + "&departure_id=" + departure.id + "&departure=" + departure.name + "&destination=" + destination.name + "&destination_id=" + destination.id;
+    let homepage = "https://arriva.si/vozni-redi/";
 
-    await page.goto(link, {
+    await page.goto(homepage, {
         waitUntil: "domcontentloaded",
     });
+
+    page.on("dialog", async dialog => {
+        console.log(dialog.message());
+        await dialog.dismiss();
+    });
+
+    await page.type(".input-departure", departure, { delay: 100 });
+    await page.keyboard.press("Enter");
+
+    await page.type(".input-destination", destination, { delay: 100 });
+    await page.keyboard.press("Enter");
+
+    await page.click(".submit");
+
+    await page.waitForNavigation({
+        waitUntil: "domcontentloaded",
+    });
+
     let connections = await page.evaluate((time) => {
         let dom_connections = document.querySelectorAll(".connection");
         let connections_array = new Array;
@@ -59,43 +65,49 @@ function betweenTimes(arrival, departure) {
     let hours = parseInt(departure[0]) - parseInt(arrival[0])
     let minutes = parseInt(departure[1]) - parseInt(arrival[1])
     if (minutes < 0) {
-        hours--
-        minutes += 60
+        hours--;
+        minutes += 60;
     }
     if (hours < 0) {
-        return null
+        return null;
     }
     hours = ("0" + hours).slice(-2);
     minutes = ("0" + minutes).slice(-2);
-    return hours + ":" + minutes
+    return hours + ":" + minutes;
 }
 
-function getConnectionsBack (arrival, old_connections_back) {
-    let new_connections_back = new Array
+function getConnectionsBack(arrival, old_connections_back) {
+    let new_connections_back = new Array;
     for (const connection of old_connections_back) {
-        let stay = betweenTimes(arrival, connection.departure)
+        let stay = betweenTimes(arrival, connection.departure);
         if (stay) {
-            let departure = connection.departure
-            let arrival = connection.arrival
-            new_connections_back.push({ departure, arrival, stay })
+            let departure = connection.departure;
+            let arrival = connection.arrival;
+            new_connections_back.push({ departure, arrival, stay });
         }
     }
-    return new_connections_back
+    return new_connections_back;
 }
 
 
-let departure = stations.Koper;
-let destination = stations.Izola;
 
-let connections = await travelTo(departure, destination);
+let args = process.argv.slice(2);
+let stations = { departure: args[0], destination: args[1] };
 
-console.log("Naslednje povezave: " + departure.name + " - " + destination.name + ":");
+if (args.length == 0) {
+    console.log("Vnesi dve postaji!");
+    process.exit(1);
+}
+
+let connections = await travelTo(stations.departure, stations.destination);
+
+console.log("Naslednje povezave: " + stations.departure + " - " + stations.destination + ":");
 console.log(connections);
 
-console.log("Za nazaj: " + destination.name + " - " + departure.name + ":");
+console.log("Za nazaj: " + stations.destination + " - " + stations.departure + ":");
 
-let selected_connection = connections.at(0)
+let selected_connection = connections.at(0);
 
-let connections_back = await travelTo(destination, departure, selected_connection.arrival);
-connections_back = getConnectionsBack(selected_connection.arrival, connections_back)
-console.log(connections_back)
+let connections_back = await travelTo(stations.destination, stations.departure, selected_connection.arrival);
+connections_back = getConnectionsBack(selected_connection.arrival, connections_back);
+console.log(connections_back);
