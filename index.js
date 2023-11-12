@@ -1,10 +1,11 @@
 import puppeteer from "puppeteer";
 
+const browser = await puppeteer.launch({
+    headless: true,
+    defaultViewport: null,
+});
+
 const travelTo = async (departure, destination, time) => {
-    const browser = await puppeteer.launch({
-        headless: true,
-        defaultViewport: null,
-    });
 
     const page = await browser.newPage();
     let homepage = "https://arriva.si/vozni-redi/";
@@ -53,9 +54,7 @@ const travelTo = async (departure, destination, time) => {
         }
         return connections_array;
     }, time);
-
-    await browser.close();
-
+    page.close();
     return connections;
 };
 
@@ -90,7 +89,6 @@ function getConnectionsBack(arrival, old_connections_back) {
 }
 
 
-
 let args = process.argv.slice(2);
 let stations = { departure: args[0], destination: args[1] };
 
@@ -100,14 +98,16 @@ if (args.length == 0) {
 }
 
 let connections = await travelTo(stations.departure, stations.destination);
-
-console.log("Naslednje povezave: " + stations.departure + " - " + stations.destination + ":");
-console.log(connections);
-
-console.log("Za nazaj: " + stations.destination + " - " + stations.departure + ":");
-
 let selected_connection = connections.at(0);
 
 let connections_back = await travelTo(stations.destination, stations.departure, selected_connection.arrival);
 connections_back = getConnectionsBack(selected_connection.arrival, connections_back);
-console.log(connections_back);
+
+let travel = {
+    depart: connections,
+    return: connections_back
+}
+
+console.log(travel);
+
+await browser.close();
