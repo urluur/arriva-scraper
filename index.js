@@ -1,9 +1,76 @@
-import puppeteer from "puppeteer";
+const express = require('express');
+const puppeteer = require('puppeteer');
 
-const browser = await puppeteer.launch({
-    headless: true,
-    defaultViewport: null,
+const app = express();
+let browser;
+
+// Initialize Puppeteer
+async function initializePuppeteer() {
+    browser = await puppeteer.launch({
+        headless: true
+    });
+}
+
+initializePuppeteer();
+
+// create a homepage where you can enter departure and arrival, when you click submit, it will redirect to /scrape with the departure and arrival as query params
+app.get('/', (req, res) => {
+    res.send(`
+    <form action="/scrape">
+      <input name="departure" placeholder="Departure" />
+      <input name="destination" placeholder="Destination" />
+      <button type="submit">Submit</button>
+    </form>
+  `);
 });
+
+async function scrapeTravel(stations) {
+    console.log('Getting connections from ' + stations.departure + ' to ' + stations.destination)
+
+    let connections;
+    try { // TODO: find some way of catching a "wrong destination" error
+        connections = await travelTo(stations.departure, stations.destination);
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ error: error });
+        return;
+    }
+
+    let selected_connection = connections.at(0);
+    let connections_back = await travelTo(stations.destination, stations.departure, selected_connection.arrival);
+
+    connections_back = getConnectionsBack(selected_connection.arrival, connections_back);
+
+    let travel = {
+        depart: connections,
+        return: connections_back
+    }
+    return travel;
+
+}
+
+app.get('/scrape', async (req, res) => {
+    let { departure, destination } = req.query;
+    let stations = { departure: departure, destination: destination };
+    let travel = await scrapeTravel(stations);
+    res.json(travel);
+});
+
+
+function getConnectionsBack(arrival, old_connections_back) {
+    let new_connections_back = new Array;
+    for (let connection of old_connections_back) {
+        let stay = betweenTimes(arrival, connection.departure);
+        if (stay) {
+            let departure = connection.departure;
+            let arrival = connection.arrival;
+            new_connections_back.push({ departure, arrival, stay });
+        }
+    }
+    return new_connections_back;
+}
+
 
 const travelTo = async (departure, destination, time) => {
 
@@ -15,17 +82,27 @@ const travelTo = async (departure, destination, time) => {
     });
 
     page.on("dialog", async dialog => {
-        console.log(dialog.message());
-        await dialog.dismiss();
+        let error = dialog.message();
+        console.log(error)
+        // TODO: find some way of catching a "wrong destination" error
     });
 
     await page.type(".input-departure", departure, { delay: 100 });
     await page.keyboard.press("Enter");
-
     await page.type(".input-destination", destination, { delay: 100 });
     await page.keyboard.press("Enter");
 
-    await page.click(".submit");
+    // await page.evaluate((departure) => {
+    //     document.querySelector(".input-departure").value = departure;
+    // }, departure);
+
+    // await page.evaluate((destination) => {
+    //     document.querySelector(".input-destination").value = destination;
+    // }, destination);
+
+    await page.evaluate(() => {
+        document.querySelector(".submit").click();
+    });
 
     await page.waitForNavigation({
         waitUntil: "domcontentloaded",
@@ -75,39 +152,5 @@ function betweenTimes(arrival, departure) {
     return hours + ":" + minutes;
 }
 
-function getConnectionsBack(arrival, old_connections_back) {
-    let new_connections_back = new Array;
-    for (const connection of old_connections_back) {
-        let stay = betweenTimes(arrival, connection.departure);
-        if (stay) {
-            let departure = connection.departure;
-            let arrival = connection.arrival;
-            new_connections_back.push({ departure, arrival, stay });
-        }
-    }
-    return new_connections_back;
-}
 
-
-let args = process.argv.slice(2);
-let stations = { departure: args[0], destination: args[1] };
-
-if (args.length == 0) {
-    console.log("Vnesi dve postaji!");
-    process.exit(1);
-}
-
-let connections = await travelTo(stations.departure, stations.destination);
-let selected_connection = connections.at(0);
-
-let connections_back = await travelTo(stations.destination, stations.departure, selected_connection.arrival);
-connections_back = getConnectionsBack(selected_connection.arrival, connections_back);
-
-let travel = {
-    depart: connections,
-    return: connections_back
-}
-
-console.log(travel);
-
-await browser.close();
+app.listen(3000, () => console.log('Server is running on port 3000'));

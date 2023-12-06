@@ -1,6 +1,6 @@
 {
   "name": "arriva-scraper",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^19.8.5"
-  },
-  "type": "module"
+    "express": "^4.18.2",
+    "puppeteer": "^21.5.2"
+  }
 }
