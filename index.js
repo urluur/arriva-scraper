@@ -1,6 +1,8 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 
+const PORT = process.env.PORT || 3030;
+
 const app = express();
 let browser;
 
@@ -74,9 +76,11 @@ const travelTo = async (departure, destination, time) => {
         // TODO: find some way of catching a "wrong destination" error
     });
 
-    await page.type(".input-departure", departure, { delay: 100 });
+    const DELAY = 100;
+    // TODO: type without delay
+    await page.type(".input-departure", departure, { delay: DELAY });
     await page.keyboard.press("Enter");
-    await page.type(".input-destination", destination, { delay: 100 });
+    await page.type(".input-destination", destination, { delay: DELAY });
     await page.keyboard.press("Enter");
 
     // await page.evaluate((departure) => {
@@ -146,7 +150,7 @@ async function main() {
     let args = process.argv.slice(2);
     let stations = { departure: args[0], destination: args[1] };
     if (args.length == 0) {
-        app.listen(3000, () => console.log('Server is running on port 3000'));
+        app.listen(process.env.PORT, () => console.log('Server is running on port ' + PORT));
     } else {
         let travel = await scrapeTravel(stations);
         console.log(travel);
