@@ -4,16 +4,12 @@ const puppeteer = require('puppeteer');
 const app = express();
 let browser;
 
-// Initialize Puppeteer
 async function initializePuppeteer() {
     browser = await puppeteer.launch({
         headless: true
     });
 }
 
-initializePuppeteer();
-
-// create a homepage where you can enter departure and arrival, when you click submit, it will redirect to /scrape with the departure and arrival as query params
 app.get('/', (req, res) => {
     res.send(`
     <form action="/scrape">
@@ -27,15 +23,8 @@ app.get('/', (req, res) => {
 async function scrapeTravel(stations) {
     console.log('Getting connections from ' + stations.departure + ' to ' + stations.destination)
 
-    let connections;
-    try { // TODO: find some way of catching a "wrong destination" error
-        connections = await travelTo(stations.departure, stations.destination);
-    }
-    catch (error) {
-        console.log(error);
-        res.json({ error: error });
-        return;
-    }
+    // TODO: check if stations are valid
+    let connections = await travelTo(stations.departure, stations.destination);
 
     let selected_connection = connections.at(0);
     let connections_back = await travelTo(stations.destination, stations.departure, selected_connection.arrival);
@@ -57,7 +46,6 @@ app.get('/scrape', async (req, res) => {
     res.json(travel);
 });
 
-
 function getConnectionsBack(arrival, old_connections_back) {
     let new_connections_back = new Array;
     for (let connection of old_connections_back) {
@@ -70,7 +58,6 @@ function getConnectionsBack(arrival, old_connections_back) {
     }
     return new_connections_back;
 }
-
 
 const travelTo = async (departure, destination, time) => {
 
@@ -152,5 +139,19 @@ function betweenTimes(arrival, departure) {
     return hours + ":" + minutes;
 }
 
+async function main() {
 
-app.listen(3000, () => console.log('Server is running on port 3000'));
+    await initializePuppeteer();
+
+    let args = process.argv.slice(2);
+    let stations = { departure: args[0], destination: args[1] };
+    if (args.length == 0) {
+        app.listen(3000, () => console.log('Server is running on port 3000'));
+    } else {
+        let travel = await scrapeTravel(stations);
+        console.log(travel);
+        await browser.close();
+    }
+}
+
+main();
