@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arriva Scraper</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+  <script>
+    function getDepartures() {
+      const departure = document.getElementById("departure").value;
+      const arrival = document.getElementById("arrival").value;
+
+      fetch('localhost:10000/scrape?departure=' + departure + '&destination=' + arrival)
+        // fetch('example.json')
+        .then(response => response.json())
+        .then(data => {
+          const departures = data.depart;
+          const returns = data.return;
+
+          const departuresTable = document.getElementById("departures_table");
+          const returnsTable = document.getElementById("returns_table");
+
+          departuresTable.innerHTML = "";
+          returnsTable.innerHTML = "";
+
+          departures.forEach(departure => {
+            const row = document.createElement("tr");
+            row.onclick = () => {
+              returnsTable.innerHTML = "";
+              returns.forEach(returnItem => {
+                if (returnItem.departure > departure.arrival) {
+
+                  function betweenTimes(arrival, departure) {
+                    arrival = arrival.split(":")
+                    departure = departure.split(":")
+                    let hours = parseInt(departure[0]) - parseInt(arrival[0])
+                    let minutes = parseInt(departure[1]) - parseInt(arrival[1])
+                    if (minutes < 0) {
+                      hours--;
+                      minutes += 60;
+                    }
+                    if (hours < 0) {
+                      return null;
+                    }
+                    hours = ("0" + hours).slice(-2);
+                    minutes = ("0" + minutes).slice(-2);
+                    return hours + ":" + minutes;
+                  }
+
+                  let row_tr = document.createElement("tr");
+                  let departure_td = document.createElement("td");
+                  let arrival_td = document.createElement("td");
+                  let stay = document.createElement("td");
+
+                  stay.innerHTML = betweenTimes(departure.arrival, returnItem.departure);
+                  departure_td.innerHTML = returnItem.departure;
+                  arrival_td.innerHTML = returnItem.arrival;
+
+                  row_tr.appendChild(stay);
+                  row_tr.appendChild(departure_td);
+                  row_tr.appendChild(arrival_td);
+
+                  returnsTable.appendChild(row_tr);
+                }
+              });
+            };
+
+            const departureCell = document.createElement("td");
+            const arrivalCell = document.createElement("td");
+
+            departureCell.innerHTML = departure.departure;
+            arrivalCell.innerHTML = departure.arrival;
+
+            row.appendChild(departureCell);
+            row.appendChild(arrivalCell);
+
+            departuresTable.appendChild(row);
+          });
+        })
+        .catch(error => console.log(error));
+    }
+
+
+  </script>
+
+  <div class="container">
+    <div class="row mt-3">
+      <h1>Arriva Scraper</h1>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        Departure: <input class="form-control" type="text" id="departure" placeholder="Koper" value="Koper" />
+      </div>
+      <div class="col">
+        Arrival: <input class="form-control" type="text" id="arrival" placeholder="Izola" value="Izola" />
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-primary mt-4 form-control" onclick="getDepartures()">Search</button>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+      <div class="col">
+        <h2>Departures</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Departure</th>
+              <th scope="col">Arrival</th>
+            </tr>
+          </thead>
+          <tbody id="departures_table">
+          </tbody>
+        </table>
+      </div>
+      <div class="col">
+        <h2>Returns</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Stay</th>
+              <th scope="col">Departure</th>
+              <th scope="col">Arrival</th>
+            </tr>
+          </thead>
+          <tbody id="returns_table">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

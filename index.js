@@ -1,7 +1,7 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 
-const PORT = process.env.PORT || 3030;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 let browser;
@@ -13,13 +13,7 @@ async function initializePuppeteer() {
 }
 
 app.get('/', (req, res) => {
-    res.send(`
-    <form action="/scrape">
-      <input name="departure" placeholder="Departure" />
-      <input name="destination" placeholder="Destination" />
-      <button type="submit">Submit</button>
-    </form>
-  `);
+    res.sendFile(__dirname + '/index.html');
 });
 
 async function scrapeTravel(stations) {
@@ -150,7 +144,7 @@ async function main() {
     let args = process.argv.slice(2);
     let stations = { departure: args[0], destination: args[1] };
     if (args.length == 0) {
-        app.listen(process.env.PORT, () => console.log('Server is running on port ' + PORT));
+        app.listen(PORT, () => console.log('Server is running on port ' + PORT));
     } else {
         let travel = await scrapeTravel(stations);
         console.log(travel);
