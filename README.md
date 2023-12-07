@@ -19,7 +19,7 @@ If the station has multiple words, wrap it in double quotes.
 ### Option 2: Run as a server
 
 - Run the server: ```node index.js```
-- Go to the homepage in browser: `localhost:3000`
+- Go to the homepage in browser: `localhost:3030`
 
 
 
