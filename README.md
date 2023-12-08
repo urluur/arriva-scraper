@@ -8,15 +8,23 @@ This is a JavaScript scraper that retrieves information on upcoming bus departur
 - Move to the directory: ```cd arriva-scraper``` 
 - Install dependancies: ```npm i```
 
-### Option 1: Run as a script
+### Option 1: Go to demo website
+
+- Go to the [demo website](https://www.google.com)
+- Enter valid departure and destination.
+- Choose a connection you want to go with, to see returns 
+
+![screenshot_web](https://github.com/urluur/arriva-scraper/blob/main/screenshot_web.jpg?raw=true)
+
+### Option 2: Run as a script
 
 - Run `index.js` with stations for arguments. Example: ```node index.js Koper Izola```
 
 If the station has multiple words, wrap it in double quotes.
 
-![screenshot](https://github.com/urluur/arriva-scraper/blob/main/screenshot.jpg?raw=true)
+![screenshot_cli](https://github.com/urluur/arriva-scraper/blob/main/screenshot_cli.jpg?raw=true)
 
-### Option 2: Run as a server
+### Option 3: Run as a server
 
 - Run the server: ```node index.js```
 - Go to the homepage in browser: `localhost:3030`
