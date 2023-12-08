@@ -20,14 +20,14 @@ app.use(cors({
 
 
 app.get('/', (req, res) => {
-    // res.sendFile(__dirname + '/index.html');
-    res.send(`
-        <form action="/scrape">
-        <input name="departure" placeholder="Departure" />
-        <input name="destination" placeholder="Destination" />
-        <button type="submit">Submit</button>
-        </form>
-    `);
+    res.sendFile(__dirname + '/index.html');
+    // res.send(`
+    //     <form action="/scrape">
+    //     <input name="departure" placeholder="Departure" />
+    //     <input name="destination" placeholder="Destination" />
+    //     <button type="submit">Submit</button>
+    //     </form>
+    // `);
 });
 
 async function scrapeTravel(stations) {
