@@ -10,7 +10,7 @@ This is a JavaScript scraper that retrieves information on upcoming bus departur
 
 ### Option 1: Go to demo website
 
-- Go to the [demo website](https://www.google.com)
+- Go to the [demo website](https://arriva-scraper.onrender.com)
 - Enter valid departure and destination.
 - Choose a connection you want to go with, to see returns 
 
