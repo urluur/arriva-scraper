@@ -1,5 +1,6 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
+const cors = require("cors")
 
 const PORT = process.env.PORT || 3030;
 
@@ -11,6 +12,12 @@ async function initializePuppeteer() {
         headless: true
     });
 }
+
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    methods: ["GET", "POST"],
+}))
+
 
 app.get('/', (req, res) => {
     // res.sendFile(__dirname + '/index.html');
