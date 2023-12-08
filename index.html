@@ -173,8 +173,16 @@
 
   <script>
     document.getElementById("results").hidden = true;
-  </script>
 
+    let prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let theme = prefersDarkMode ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-bs-theme', theme);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      const newTheme = e.matches ? 'dark' : 'light'
+      document.documentElement.setAttribute('data-bs-theme', newTheme)
+    })
+  </script>
 </body>
 
 </html>

@@ -25,9 +25,9 @@ If the station has multiple words, wrap it in double quotes.
 
 ## Alternatively: Go to demo website
 
-- Go to the [demo website](https://arriva-scraper.onrender.com)
-- Enter valid departure and destination.
-- Choose a connection you want to go with, to see returns 
+- Go to the [demo website](https://arriva-scraper-urluur.vercel.app)
+- Enter *valid* names of departure and destination stations
+- Click on a connection to see returns
 
 
 
