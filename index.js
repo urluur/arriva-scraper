@@ -91,14 +91,6 @@ const travelTo = async (departure, destination, time) => {
     await page.type(".input-destination", destination, { delay: DELAY });
     await page.keyboard.press("Enter");
 
-    // await page.evaluate((departure) => {
-    //     document.querySelector(".input-departure").value = departure;
-    // }, departure);
-
-    // await page.evaluate((destination) => {
-    //     document.querySelector(".input-destination").value = destination;
-    // }, destination);
-
     await page.evaluate(() => {
         document.querySelector(".submit").click();
     });
@@ -119,8 +111,9 @@ const travelTo = async (departure, destination, time) => {
 
                 if (!time) {
                     let date = new Date();
-                    let h = ("0" + date.getHours()).slice(-2);
-                    let m = ("0" + date.getMinutes()).slice(-2);
+                    date.setUTCHours(date.getUTCHours() + 1); // Set the time to UTC+1
+                    let h = ("0" + date.getUTCHours()).slice(-2);
+                    let m = ("0" + date.getUTCMinutes()).slice(-2);
                     time = (h + ":" + m);
                 }
                 if (departure >= time) {

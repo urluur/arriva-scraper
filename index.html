@@ -16,16 +16,36 @@
 <body>
 
   <script>
+
+    function betweenTimes(arrival, departure) {
+      arrival = arrival.split(":")
+      departure = departure.split(":")
+      let hours = parseInt(departure[0]) - parseInt(arrival[0])
+      let minutes = parseInt(departure[1]) - parseInt(arrival[1])
+      if (minutes < 0) {
+        hours--;
+        minutes += 60;
+      }
+      if (hours < 0) {
+        return null;
+      }
+      hours = ("0" + hours).slice(-2);
+      minutes = ("0" + minutes).slice(-2);
+      return hours + ":" + minutes;
+    }
+
     function getDepartures() {
       const departure = document.getElementById("departure").value;
       const arrival = document.getElementById("arrival").value;
 
-      // fetch('https://arriva-scraper.onrender.com/scrape?departure=' + departure + '&destination=' + arrival)
-      // fetch('example.json')
+      document.getElementById("loading").hidden = false;
+      document.getElementById("results").hidden = true;
+      document.getElementById("search").disabled = true;
 
       axios.get('https://arriva-scraper.onrender.com/scrape?departure=' + departure + '&destination=' + arrival)
-        .then(response => response.json())
+        .then(response => response.data)
         .then(data => {
+          console.log(data);
           const departures = data.depart;
           const returns = data.return;
 
@@ -46,25 +66,8 @@
 
               returnsTable.innerHTML = "";
               returns.forEach(returnItem => {
+                console.log(returnItem.departure + " " + departure.arrival);
                 if (returnItem.departure > departure.arrival) {
-
-                  function betweenTimes(arrival, departure) {
-                    arrival = arrival.split(":")
-                    departure = departure.split(":")
-                    let hours = parseInt(departure[0]) - parseInt(arrival[0])
-                    let minutes = parseInt(departure[1]) - parseInt(arrival[1])
-                    if (minutes < 0) {
-                      hours--;
-                      minutes += 60;
-                    }
-                    if (hours < 0) {
-                      return null;
-                    }
-                    hours = ("0" + hours).slice(-2);
-                    minutes = ("0" + minutes).slice(-2);
-                    return hours + ":" + minutes;
-                  }
-
                   let row_tr = document.createElement("tr");
                   let departure_td = document.createElement("td");
                   let arrival_td = document.createElement("td");
@@ -93,11 +96,20 @@
             row.appendChild(arrivalCell);
 
             departuresTable.appendChild(row);
+            document.getElementById("loading").hidden = true;
+            document.getElementById("results").hidden = false;
+            document.getElementById("search").disabled = false;
+
           });
         })
-        .catch(error => console.log(error));
-    }
+        .catch(error => {
+          console.log(error);
+          document.getElementById("loading").hidden = true;
+          document.getElementById("results").hidden = true;
+          document.getElementById("search").disabled = false;
 
+        });
+    }
 
   </script>
 
@@ -108,19 +120,27 @@
 
     <div class="row">
       <div class="col">
-        Departure: <input class="form-control" type="text" id="departure" placeholder="Koper" value="Koper" />
+        Departure: <input required class="form-control" type="text" id="departure" placeholder="Koper" />
       </div>
       <div class="col">
-        Arrival: <input class="form-control" type="text" id="arrival" placeholder="Izola" value="Izola" />
+        Arrival: <input required class="form-control" type="text" id="arrival" placeholder="Izola" />
       </div>
       <div class="col">
-        <button type="button" class="btn btn-primary mt-4 form-control" onclick="getDepartures()">Search</button>
+        <button id="search" type="button" class="btn btn-primary mt-4 form-control"
+          onclick="getDepartures()">Search</button>
       </div>
     </div>
 
     <br>
 
-    <div class="row">
+    <div id="loading" hidden="true">
+      <div class="d-flex align-items-center">
+        <strong>Loading...</strong>
+        <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="row" id="results">
       <div class="col">
         <h2>Departures</h2>
         <table class="table table-striped table-bordered">
@@ -150,6 +170,11 @@
       </div>
     </div>
   </div>
+
+  <script>
+    document.getElementById("results").hidden = true;
+  </script>
+
 </body>
 
 </html>
