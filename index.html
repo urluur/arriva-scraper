@@ -42,7 +42,7 @@
       document.getElementById("results").hidden = true;
       document.getElementById("search").disabled = true;
 
-      axios.get('https://arriva-scraper.onrender.com/scrape?departure=' + departure + '&destination=' + arrival)
+      axios.get('https://arriva-scraper-urluur.vercel.app/scrape?departure=' + departure + '&destination=' + arrival)
         .then(response => response.data)
         .then(data => {
           console.log(data);

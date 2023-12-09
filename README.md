@@ -30,7 +30,6 @@ If the station has multiple words, wrap it in double quotes.
 - Click on a connection to see returns
 
 
-
 ![screenshot_web](https://github.com/urluur/arriva-scraper/blob/main/screenshot_web.jpg?raw=true)
 
 
