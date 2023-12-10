@@ -4,6 +4,7 @@ This is a JavaScript scraper that retrieves information on upcoming bus departur
 
 ## Instructions
 
+- Make sure you have [Node.js](https://nodejs.org/en) installed
 - Clone the repository: ```git clone https://github.com/urluur/arriva-scraper.git```
 - Move to the directory: ```cd arriva-scraper``` 
 - Install dependancies: ```npm i```
