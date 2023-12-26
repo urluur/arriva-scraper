@@ -11,7 +11,7 @@ This is a JavaScript scraper that retrieves information on upcoming bus departur
 
 ### Option 1: Run as a script
 
-- Run `index.js` with stations for arguments. Example: ```node index.js Koper Izola```
+- Run `scraper.js` with stations for arguments. Example: ```node scraper.js Koper Izola```
 
 If the station has multiple words, wrap it in double quotes.
 
@@ -19,7 +19,7 @@ If the station has multiple words, wrap it in double quotes.
 
 ### Option 2: Run as a server
 
-- Run the server: ```node index.js```
+- Run the server: ```node scraper.js```
 - Go to the homepage in browser: `localhost:3030`
 
 <br>

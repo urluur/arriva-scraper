@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arriva Scraper</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+
+  <script src="app.js"></script>
+
+  <div class="container">
+    <div class="row mt-3">
+      <h1>Arriva Scraper</h1>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        Departure: <input required class="form-control" type="text" id="departure" placeholder="Koper" />
+      </div>
+      <div class="col">
+        Arrival: <input required class="form-control" type="text" id="arrival" placeholder="Izola" />
+      </div>
+      <div class="col">
+        <button id="search" type="button" class="btn btn-primary mt-4 form-control"
+          onclick="getDepartures()">Search</button>
+      </div>
+    </div>
+
+    <br>
+
+    <div id="loading" hidden="true">
+      <div class="d-flex align-items-center">
+        <strong>Loading...</strong>
+        <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="row" id="results">
+      <div class="col">
+        <h2>Departures</h2>
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Departure</th>
+              <th scope="col">Arrival</th>
+            </tr>
+          </thead>
+          <tbody id="departures_table">
+          </tbody>
+        </table>
+      </div>
+      <div class="col">
+        <h2>Returns</h2>
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Stay</th>
+              <th scope="col">Departure</th>
+              <th scope="col">Arrival</th>
+            </tr>
+          </thead>
+          <tbody id="returns_table">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("results").hidden = true;
+
+    let prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let theme = prefersDarkMode ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-bs-theme', theme);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      const newTheme = e.matches ? 'dark' : 'light'
+      document.documentElement.setAttribute('data-bs-theme', newTheme)
+    })
+  </script>
+</body>
+
+</html>

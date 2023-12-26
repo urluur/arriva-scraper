@@ -1,6 +1,7 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const cors = require("cors")
+const path = require('path');
 
 const PORT = process.env.PORT || 3030;
 
@@ -13,6 +14,7 @@ async function initializePuppeteer() {
     });
 }
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     methods: ["GET", "POST"],
@@ -20,7 +22,7 @@ app.use(cors({
 
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 async function scrapeTravel(stations) {
@@ -28,6 +30,10 @@ async function scrapeTravel(stations) {
 
     // TODO: check if stations are valid
     let connections = await travelTo(stations.departure, stations.destination);
+
+    if (connections.length == 0) {
+        return { "departures": [] };
+    }
 
     let selected_connection = connections.at(0);
     let connections_back = await travelTo(stations.destination, stations.departure, selected_connection.arrival);
@@ -71,10 +77,10 @@ const travelTo = async (departure, destination, time) => {
         waitUntil: "domcontentloaded",
     });
 
-    page.on("dialog", async dialog => {
+    page.on("dialog", async (dialog) => {
         let error = dialog.message();
-        console.log(error)
         // TODO: find some way of catching a "wrong destination" error
+        await dialog.dismiss();
     });
 
     const DELAY = 100;
@@ -117,6 +123,7 @@ const travelTo = async (departure, destination, time) => {
         return connections_array;
     }, time);
     page.close();
+
     return connections;
 };
 

@@ -2,10 +2,10 @@
   "name": "arriva-scraper",
   "version": "2.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "scraper.js",
   "scripts": {
-    "start": "npm i && npx puppeteer browsers install chrome && node index.js",
-    "dev": "nodemon index.js",
+    "start": "npm i && npx puppeteer browsers install chrome && node scraper.js",
+    "dev": "nodemon scraper.js",
     "build": "npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
