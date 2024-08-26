@@ -26,12 +26,15 @@ If the station has multiple words, wrap it in double quotes.
 
 ## Alternatively: Go to demo website
 
-[![Website monip.org](https://img.shields.io/website-up-down-green-red/http/arriva-scraper.onrender.com.svg)](http://arriva-scraper.onrender.com/)
-
 - Go to the [demo website](https://arriva-scraper.onrender.com) 
 - Enter *valid* names of departure and destination stations
 - Click on a connection to see returns
 
+>[!note]
+>Demo website is significantly slower than running the server locally.
+>You can try out the project on the demo website, but you might need to wait approximately one minute for the remote server to start.
+>
+>[![Website monip.org](https://img.shields.io/website-up-down-green-red/http/arriva-scraper.onrender.com.svg)](http://arriva-scraper.onrender.com/)
 
 ![screenshot_web](https://github.com/urluur/arriva-scraper/blob/main/screenshot_web.jpg?raw=true)
 
