@@ -28,9 +28,11 @@ function getDepartures() {
     .then(data => {
       updateSite(data);
     })
-    .catch(() => { // looks like we are on render
+    .catch(error => {
+      console.log(error);
+      console.log("Looks like we are on render");
       axios.get('https://arriva-scraper.onrender.com/scrape?departure=' + departure + '&destination=' + arrival)
-        .then(response => response.json())
+        .then(response => response.data)
         .then(data => {
           updateSite(data);
         })
